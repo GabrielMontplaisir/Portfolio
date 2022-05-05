@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
+  <script type="text/javascript">
+
+    // var developerKey = '';                                         // Developer Key from Google Cloud Project.
+    var DIALOG_DIMENSIONS = {width: 1051, height: 650};                // The max dimensions for the dialog box is 1051,650.
+    var pickerApiLoaded = false;
+
+
+    // Use the Google API Loader script to load the google.picker script.
+    function onApiLoad() {
+      gapi.load('picker', {'callback': function() {
+        pickerApiLoaded = true;
+      }});
+    }
+
+    function getOAuthToken() {
+      google.script.run.withSuccessHandler(createPicker).getOAuthToken();
+    }
+
+    function createPicker(token) {
+      if (pickerApiLoaded && token) {
+        var docsView = new google.picker.DocsView()
+          //.setIncludeFolders(true)  // As we're copying folders, we want to include folders in the picker.
+          // .setParent('root')        // By setting the parent, we can see the directory properly. If not set, then we see ALL folders in one screen.
+          .setSelectFolderEnabled(true) // Enables the user to select folders.
+          .setMimeTypes('application/vnd.google-apps.form'); // If we want, we can make it that ONLY folders are viewable.
+
+        var picker = new google.picker.PickerBuilder()
+            .addView(docsView)  // Adds the settings set above.
+            .enableFeature(google.picker.Feature.MULTISELECT_ENABLED) // Allows the user to select multiple folders at once. Disable this to only allow one folder at a time.
+            .enableFeature(google.picker.Feature.NAV_HIDDEN) // Removes the header. Disable to allow view of the header.
+            .enableFeature(google.picker.Feature.MINE_ONLY)  // Only allows the person to view their own folders. Disable to allow shared folders (not shared drives).
+            .setSelectableMimeTypes('application/vnd.google-apps.form') // Only allows the selection of folders. Disable to allow all files and folders.
+            .hideTitleBar()  // Hides title bar as it only takes up space.
+            .setOAuthToken(token)
+            //.setDeveloperKey(developerKey)
+            .setCallback(pickerCallback)
+            .setOrigin(google.script.host.origin)
+            .setSize(DIALOG_DIMENSIONS.width - 2,
+                DIALOG_DIMENSIONS.height - 2)                                 // Reducing width & height to see the border.
+            .build();
+        picker.setVisible(true);                                              // Make picker visible.
+      } else {
+        showError('Unable to load the file picker.');
+      }
+    }
+
+    function findSideBar(limit, message) {
+      let f = window.top.frames;
+      for (let i = 0; i < limit; ++i) {
+        try {
+          if (
+            f[i] /*/iframedAppPanel*/ &&
+            f[i].length &&
+            f[i][0] && //#sandboxFrame
+            f[i][0][0] && //#userHtmlFrame
+            window !== f[i][0][0] //!== self
+          ) {
+            var sidebar = f[i][0][0];
+            sidebar.modalDone(message); //Modal has finished
+            google.script.host.close();
+          }
+        } catch (e) {
+          console.error(e);
+          continue;
+        }
+      }
+    };
+
+    function pickerCallback(data) {
+      var action = data[google.picker.Response.ACTION];
+
+      // If a form is picked...
+      if (action == google.picker.Action.PICKED) {
+        // Retrieve the documents.
+        var doc = data[google.picker.Response.DOCUMENTS];
+        var formData = [];
+        for (var i = 0; i < doc.length ; i++) {
+          var id = doc[i][google.picker.Document.ID];
+          formData.push(id);
+        };
+
+        google.script.run.importForm(formData);
+        var message = "Form imported.";
+        findSideBar(10, message);
+
+      } else if (action == google.picker.Action.CANCEL || action == google.picker.Action.CLOSE) {
+        var message = "Picker cancelled.";
+        findSideBar(10, message);
+      }
+    }
+  </script>
+
+</head>
+<!-- Display the Picker as soon as the dialog loads. -->
+<body onload="getOAuthToken()">
+  <script type="text/javascript" src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
+</body>
+</html>
