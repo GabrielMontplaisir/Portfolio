@@ -89,6 +89,9 @@ function createStudentPortfolio(student, name, row){
 * The main function to the whole operation. This is where the magic happens. I will do my best to break everything down.
 */
 function sortComments(studentComments) {
+  
+  // The array loops I use here are more efficient from what I can tell, but give random values which can't be directly translated to a row or column integer. They only seem to work for the loop itself. I have to therefore create a variable for the row number.
+  var row = 2;
 
   // Grab the Portfolio sheet, then get the Portfolio URLs, the StudentIDs and the Student Names.
   var ss = SpreadsheetApp.getActive();
@@ -96,9 +99,6 @@ function sortComments(studentComments) {
   var portfolioURL = portfolioSheet.getRange(row,portfolioSheet.getLastColumn())
   var studentList = portfolioSheet.getRange(2,1,portfolioSheet.getLastRow()-1).getValues();
   var studentName = portfolioSheet.getRange(2,2,portfolioSheet.getLastRow()-1).getValues();
-
-  // The array loops I use here are more efficient from what I can tell, but give random values which can't be directly translated to a row or column integer. They only seem to work for the loop itself. I have to therefore create a variable for the row number.
-  var row = 2;
 
   // For all the students in the Portfolio Tab...
   for (var l in studentList) {
