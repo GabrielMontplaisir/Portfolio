@@ -31,6 +31,14 @@ function exportPortfolio() {
       return "Could not find a linked Google Form. Please link a form first, then try again."
     }
 
+    // Check if all responses have an associated email address in the Portfolio tab.
+    for (var e in formResponses) {
+      if (portfolio.createTextFinder(formResponses[e].getRespondentEmail()).matchEntireCell(true).findNext()) {
+        continue
+      }
+      portfolio.getRange(portfolio.getLastRow()+1,1).setValue(formResponses[e].getRespondentEmail());
+    }
+
     // Place all values in an easily retrievable Array that will be passed to sortComments(). If there's an error, it's likely because the email and comment columns were not set properly.
     try {
       var studentComments = [
@@ -108,6 +116,7 @@ function sortComments(studentComments) {
   // For all the students in the Portfolio Tab...
   for (var l = 1; l < data.length; l++) {
     // Logger.log(data[l][0]);
+
     // For all the students who filled a response...
     for (var s = 0; s < studentComments[0].length; s++){
       // Logger.log(studentComments[0][s].getRespondentEmail())
