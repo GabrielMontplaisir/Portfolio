@@ -103,16 +103,16 @@
     }).createForm();
   }
 
-  function createStudentPortfolio() {
-    document.getElementById("createPortfolioBtn").classList.add("spinner");
-    google.script.run.withSuccessHandler(function (value) {
-      document.getElementById("createPortfolioBtn").classList.remove("spinner");
-      success(value);
-    }).withFailureHandler(function (value) {
-      document.getElementById("createPortfolioBtn").classList.remove("spinner");
-      failure();
-    }).createStudentPortfolio();
-  }
+  // function createStudentPortfolio() {
+  //   document.getElementById("createPortfolioBtn").classList.add("spinner");
+  //   google.script.run.withSuccessHandler(function (value) {
+  //     document.getElementById("createPortfolioBtn").classList.remove("spinner");
+  //     success(value);
+  //   }).withFailureHandler(function (value) {
+  //     document.getElementById("createPortfolioBtn").classList.remove("spinner");
+  //     failure();
+  //   }).createStudentPortfolio();
+  // }
 
   function showPicker() {
     google.script.run.withSuccessHandler(function(value) {

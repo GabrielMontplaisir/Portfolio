@@ -6,10 +6,9 @@ A script to create Portfolios for a group of students (in the form of Google Sli
 1. Create a copy of Portfolio by clicking on the link in the description, or copy the code into your own Sheet.
 2. Authenticate the extension by selecting Extensions > Portfolio > Show Sidebar.
 3. If not created already, create a Portfolio Tab from the Sidebar.
-4. In the Portfolio Tab, paste a list of student IDs (usually email addresses) in column A, starting in row 2, and a list of student names in column B. Leave the `Portfolio URL column` empty. The script will generate URLs automatically for you.
-5. Import Google Forms by selecting `Import Form` or create a new form via `Create Form`.
-6. In the last column of a Form Response Tab, add a column with the header `Comments`. Add comments for student responses.
-7. Via the Hamburger Icon, select the `Student ID Column` and `Comments Column` headers from one of the Forms response tabs. This was done to support the different languages for Google Forms.
+4. Import Google Forms by selecting `Import Form` or create a new form via `Create Form`.
+5. In the last column of a Form Response Tab, add a column with the header `Comments`. Add comments for student responses.
+6. Via the Hamburger Icon, select the `Comments Column` header from one of the Forms response tabs. This was done to support the different languages for Google Forms.
 
 ## Usage
 
@@ -17,10 +16,12 @@ Once you've set everything up from the [Installation](#installation) section, se
 
 When you click `Export to Portfolio`, a slide is appended to each student's portfolio with their responses, the teacher comments and a section for notes. At this time, you have to select `Export to Portfolio` for each tab.
 
+**Note: The tab you wish to export must be linked to a Google Form. If it isn't, the script will return an error. Either import the form from the Sidebar, or change the destination inside the Google Form itself.**
+
 ## Coming Soon
 
 - Export ALL Google Form Tabs to Portfolios.
-- Add an option to create a Google Slides for all students
+- Add an option to create Portfolios for all students
 - Allow the user to select the Template Slide of their choosing
 - Save and find the Portfolios even if the link was erased in the Portfolio tab.
 - Save, find and modify the appropriate Slide in the Portfolio for the appropriate response (unsure if this is possible). 
