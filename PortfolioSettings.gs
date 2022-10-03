@@ -12,7 +12,6 @@ function PortfolioExists() {
 }
 
 function createPortfolioTab() {
-  createFormTrigger();
   createPortfolioFolder();
   var ss = SpreadsheetApp.getActive();
   var portfolioSheet = ss.insertSheet('Portfolio');
@@ -22,31 +21,9 @@ function createPortfolioTab() {
   portfolioSheet.getRange(1,2).setValue('Portfolio URL');
   PropertiesService.getDocumentProperties().setProperty('PortfolioSheet', portfolioSheet.getSheetId().toString());
   // PropertiesService.getDocumentProperties().setProperty('IDCol', "Email Address");
-  PropertiesService.getDocumentProperties().setProperty('commentCol', "Comment");
+  PropertiesService.getDocumentProperties().setProperty('commentCol', "Comments");
   return "Created Portfolio tab and folder."
 }
-
-function createFormTrigger() {
-  var ss = SpreadsheetApp.getActive();
-  var triggers = ScriptApp.getProjectTriggers();
-  var formSubmitExists = false;
-
-  triggers.forEach(function (trigger) {
-    if(trigger.getEventType() === ScriptApp.EventType.ON_FORM_SUBMIT && trigger.getHandlerFunction() === "formSubmit") {
-      formSubmitExists = true;
-    }
-  });
-  
-  if (!formSubmitExists) {
-    ScriptApp.newTrigger('formSubmit')
-      .forSpreadsheet(ss)
-      .onFormSubmit()
-      .create();
-    Logger.log("Trigger Created")
-  }
-}
-
-
 
 // function getID() {return PropertiesService.getDocumentProperties().getProperty("IDCol")}
 function getComment() {return PropertiesService.getDocumentProperties().getProperty('commentCol')}

@@ -49,7 +49,7 @@ function exportPortfolio() {
       // Logger.log(studentComments)
     } catch (e) {
       // return "Identifier doesn't match or can't be found in portfolio. Select identifiers through the hamburger icon in the top right, or make sure they're correct in the portfolio tab."
-      return "Comment Column can't be found in portfolio. Please select the Comment Column through the hamburger icon in the top right."
+      return "Comment Column can't be found in portfolio. Make sure the Comment Column exists, and select it through the hamburger icon in the top right."
     }
 
     // Start sorting comments
@@ -60,7 +60,7 @@ function exportPortfolio() {
     return "Cannot export from Portfolio Tab."
   }
   // If everything completed successfully, return this.
-  return "Exported comments to Portfolios."
+  return "Exported successfully to portfolios."
 }
 
 
@@ -91,14 +91,12 @@ function createStudentPortfolio(student, row){
   // Set the Portfolio URL
   portfolioURL.setValue(newPortfolio.getUrl());
 
-
-
   // When you create a new Slide, the first slide will be the default. These next commands are to remove the default first slide, replace it with the first slide from the template, then name the Portfolio.
   newPortfolio.getSlides()[0].remove();
   newPortfolio.appendSlide(SlidesApp.openById(templateSlideID).getSlides()[0]);
   newPortfolio.getSlides()[0].replaceAllText("{{Portfolio Name}}", fullName+' Portfolio');
 
-  // Return this prompt if everything worked.
+  // Return the Portfolio URL if everything worked.
   return portfolioURL.getValue();
 }
 
@@ -106,10 +104,7 @@ function createStudentPortfolio(student, row){
 * The main function to the whole operation. This is where the magic happens. I will do my best to break everything down.
 */
 function sortComments(studentComments) {
-
-  // The array loops I use here are more efficient from what I can tell, but give random values which can't be directly translated to a row or column integer. They only seem to work for the loop itself. I have to therefore create a variable for the row number.
-
-  // Grab the Portfolio sheet, then get the Portfolio URLs, the StudentIDs and the Student Names.
+  // Grab the Portfolio sheet data.
   var data = portfolio.getDataRange().getValues();
   // Logger.log(data);
 
@@ -125,9 +120,9 @@ function sortComments(studentComments) {
 
         try {
           var formResponse = studentComments[0][s].getItemResponses();
-          Logger.log(formResponse)
+          // Logger.log(formResponse)
         } catch (e) {
-          Logger.log("Did not find Item Responses");
+          Logger.log("Did not find Form responses.")
           // formResponse = studentComments[1][s];
         }
       
@@ -135,7 +130,7 @@ function sortComments(studentComments) {
           // Logger.log(data[l][1])
           var studentPortfolio = SlidesApp.openByUrl(data[l][1].toString());
         } catch (e) {
-          Logger.log("Cannot find student Portfolio. Creating new one.");
+          // Logger.log("Cannot find student Portfolio. Creating new one.");
           var studentPortfolio = SlidesApp.openByUrl(createStudentPortfolio(data[l], l));
         }
 
