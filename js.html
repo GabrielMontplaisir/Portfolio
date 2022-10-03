@@ -9,7 +9,7 @@
 <script>
   function init() {
     PortfolioExists();
-    getID();
+    // getID();
     getComment();
   }
 
@@ -33,7 +33,7 @@
 
   function PortfolioExists() {
     google.script.run.withSuccessHandler(function (value) {
-      if (value == true) {
+      if (value === true) {
         document.getElementById("portfolioBtn").classList.add("hide");
       }
     }).PortfolioExists();
@@ -67,11 +67,11 @@
     }).exportPortfolio();
   }
 
-  function getID() {
-    google.script.run.withSuccessHandler(function (value) {
-      document.getElementById("idCol").innerHTML = value;
-    }).getID();
-  }
+  // function getID() {
+  //   google.script.run.withSuccessHandler(function (value) {
+  //     document.getElementById("idCol").innerHTML = value;
+  //   }).getID();
+  // }
 
   function getComment() {
     google.script.run.withSuccessHandler(function (value) {
@@ -79,11 +79,11 @@
     }).getComment();
   }
 
-  function updateID() {
-    google.script.run.withSuccessHandler(function (value) {
-      document.getElementById("idCol").innerHTML = value;
-    }).updateID();
-  }
+  // function updateID() {
+  //   google.script.run.withSuccessHandler(function (value) {
+  //     document.getElementById("idCol").innerHTML = value;
+  //   }).updateID();
+  // }
 
   function updateComment() {
     google.script.run.withSuccessHandler(function (value) {
