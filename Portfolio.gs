@@ -98,7 +98,7 @@ function sortComments(docPropsKeys, studentComments) {
   // Logger.log(studentComments)
   // For all the students in the Portfolio Tab...
   for (var l in docPropsKeys) {
-    Logger.log(docPropsKeys[l]);
+    // Logger.log(docPropsKeys[l]);
 
     // For all the students who filled a response...
     for (var s in studentComments[0]){
