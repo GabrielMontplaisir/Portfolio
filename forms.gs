@@ -4,7 +4,7 @@ function createForm() {
     .setLimitOneResponsePerUser(true);
   var ss = SpreadsheetApp.getActive();
   newForm.setDestination(FormApp.DestinationType.SPREADSHEET, ss.getId());
-  DriveApp.getFileById(newForm.getId()).moveTo(DriveApp.getFolderById(PropertiesService.getDocumentProperties().getProperty("docFolderID")))
+  DriveApp.getFileById(newForm.getId()).moveTo(DriveApp.getFolderById(PropertiesService.getUserProperties().getProperty("docFolderID")))
   return newForm.getEditUrl()
 }
 

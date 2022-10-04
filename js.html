@@ -8,7 +8,6 @@
 
 <script>
   function init() {
-    PortfolioExists();
     // getID();
     getComment();
   }
@@ -31,32 +30,15 @@
     alert.show();
   }
 
-  function PortfolioExists() {
-    google.script.run.withSuccessHandler(function (value) {
-      if (value === true) {
-        document.getElementById("portfolioBtn").classList.add("hide");
-      }
-    }).PortfolioExists();
-  }
-
   function hideMenu() {
     document.getElementById("menu").classList.toggle("show");
-  }
-
-  function createPortfolioTab() {
-    document.getElementById("createBtn").classList.add("spinner");
-    google.script.run.withSuccessHandler(function (value) {
-      document.getElementById("portfolioBtn").classList.add("hide");
-      success(value);
-    }).withFailureHandler(failure)
-    .createPortfolioTab();
   }
 
   function exportPortfolio() {
     document.getElementById("portfolio").classList.add("spinner");
     google.script.run.withSuccessHandler(function (value) {
       document.getElementById("portfolio").classList.remove("spinner");
-      if (value == "Exported comments to Portfolios.") {
+      if (value == "Exported successfully to portfolios.") {
         success(value);
       } else {
         failure(value);

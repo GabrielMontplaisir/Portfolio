@@ -4,39 +4,18 @@ function getSheetbyId(id) {
   )[0];
 }
 
-function PortfolioExists() {
-  if (getSheetbyId(PropertiesService.getDocumentProperties().getProperty('PortfolioSheet')) != null) {
-    return true
-  }
-  return false
-}
-
-function createPortfolioTab() {
-  createPortfolioFolder();
-  var ss = SpreadsheetApp.getActive();
-  var portfolioSheet = ss.insertSheet('Portfolio');
-  portfolioSheet.hideSheet();
-  portfolioSheet.deleteColumns(3,24);
-  portfolioSheet.getRange(1,1).setValue('Email Address');
-  portfolioSheet.getRange(1,2).setValue('Portfolio URL');
-  PropertiesService.getDocumentProperties().setProperty('PortfolioSheet', portfolioSheet.getSheetId().toString());
-  // PropertiesService.getDocumentProperties().setProperty('IDCol', "Email Address");
-  PropertiesService.getDocumentProperties().setProperty('commentCol', "Comments");
-  return "Created Portfolio tab and folder."
-}
-
-// function getID() {return PropertiesService.getDocumentProperties().getProperty("IDCol")}
-function getComment() {return PropertiesService.getDocumentProperties().getProperty('commentCol')}
+// function getID() {return PropertiesService.getScriptProperties().getProperty("IDCol")}
+function getComment() {return PropertiesService.getScriptProperties().getProperty('commentCol')}
 
 // function updateID() {
 //   var currentid = SpreadsheetApp.getCurrentCell().getValue();
-//   PropertiesService.getDocumentProperties().setProperty('IDCol', currentid);
+//   PropertiesService.getScriptProperties().setProperty('IDCol', currentid);
 //   return currentid
 // }
 
 function updateComment() {
   var currentComment = SpreadsheetApp.getCurrentCell().getValue();
-  PropertiesService.getDocumentProperties().setProperty('commentCol', currentComment);
+  PropertiesService.getScriptProperties().setProperty('commentCol', currentComment);
   return currentComment
 }
 
@@ -50,6 +29,10 @@ function getDocProps() {
   keys.forEach(k => {a.push([k,uObj[k]]);});
   sh.getRange(1,1,a.length, a[0].length).setValues(a);
   ss.toast('Document Properties generated.')
+}
+
+function delDocProps() {
+  PropertiesService.getDocumentProperties().deleteAllProperties();
 }
 
 function createPortfolioFolder() {
@@ -86,7 +69,7 @@ function checkSubFolders() {
   var subFolderExists = false;
   var portfolioFolder = DriveApp.getFolderById(PropertiesService.getUserProperties().getProperty("portfolioFolderID"));
   var userSubFolders = portfolioFolder.getFolders();
-  var subFolderID = PropertiesService.getDocumentProperties().getProperty("docFolderID");
+  var subFolderID = PropertiesService.getUserProperties().getProperty("docFolderID");
   while (userSubFolders.hasNext()) {
     var subFolder = userSubFolders.next();
 
@@ -105,7 +88,7 @@ function checkSubFolders() {
   if (!subFolderExists) {
     Logger.log("Subfolder not found")
     subFolderID = portfolioFolder.createFolder(ssName).getId();
-    PropertiesService.getDocumentProperties().setProperty("docFolderID", subFolderID);
+    PropertiesService.getUserProperties().setProperty("docFolderID", subFolderID);
     return subFolderID
   }
 }
