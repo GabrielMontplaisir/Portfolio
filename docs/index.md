@@ -11,7 +11,7 @@ A script to create Portfolios for a group of students (in the form of Google Sli
 
 ## Usage
 
-Once you've set everything up from the [Installation](#installation) section, select one of the response tabs and select the `Export to Portfolio` option. The first time you execute this script, it will longer than usual. This is because the script is generating portfolios for all your students and placing them in a dedicated folder in your Google Drive (to keep everything organized). The portfolios are automatically shared with the students with Editor access. If at any point, the student deletes their portfolio, you delete the portfolio, or the link is deleted, the script will automatically create a new Portfolio for that student.
+Once you've set everything up from the [Installation](#installation) section, select one of the response tabs and select the `Export to Portfolio` option. The first time you execute this script, it will take longer than usual. This is because the script is generating portfolios for all your students and placing them in a dedicated folder in your Google Drive (to keep everything organized). The portfolios are automatically shared with the students with Editor access. If at any point, the student deletes their portfolio, you delete the portfolio, or the link is deleted, the script will automatically create a new Portfolio for that student.
 
 When you click `Export to Portfolio`, a slide is appended to each student's portfolio with their responses, the teacher comments and a section for notes. At this time, you have to select `Export to Portfolio` for each tab.
 
