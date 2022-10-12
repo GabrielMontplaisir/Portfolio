@@ -1,17 +1,4 @@
-function getSheetbyId(id) {
-  return SpreadsheetApp.getActive().getSheets().filter(
-    function(s) {return s.getSheetId().toString() === id;}
-  )[0];
-}
-
-// function getID() {return PropertiesService.getScriptProperties().getProperty("IDCol")}
 function getComment() {return PropertiesService.getScriptProperties().getProperty('commentCol')}
-
-// function updateID() {
-//   var currentid = SpreadsheetApp.getCurrentCell().getValue();
-//   PropertiesService.getScriptProperties().setProperty('IDCol', currentid);
-//   return currentid
-// }
 
 function updateComment() {
   var currentComment = SpreadsheetApp.getCurrentCell().getValue();

@@ -1,9 +1,6 @@
 // ID for template slide. TODO: Make it selectable by user.
 var templateSlideID = "1NvIum_IB-2wUZSCeVFlcOTj5xV4e7cysBcnOifkhZj4"
 
-// The column name to identify students. This should be a unique identifier, such as an email.
-// var email = PropertiesService.getScriptProperties().getProperty("IDCol");
-
 // The column name for the student grades.
 var comment = PropertiesService.getScriptProperties().getProperty('commentCol');
 
@@ -11,47 +8,38 @@ function exportPortfolio() {
   var ss = SpreadsheetApp.getActive();
   var sh = ss.getActiveSheet();
 
-
-// Get values from Spreadsheet
-  var data = sh.getDataRange().getValues();
-  // var emailIndex = data[0].indexOf(email); // Get Email column, selected by the user.
-  var commentIndex = data[0].indexOf(comment);  // Get Comment column, selected by user.
-
   // Try to get the Responses to a linked form. If form is not linked, grab the responses from the sheet instead, between the email and the comment column.
   try {
     var formResponses = FormApp.openByUrl(sh.getFormUrl()).getResponses();
     // Logger.log("Found Form")
   } catch (e) {
-    // Logger.log("Did not find form")
-    // var formResponses = sh.getRange(1,emailIndex+2, sh.getLastRow(), commentIndex-2).getValues();
+    Logger.log("Did not find form")
     return "Could not find a linked Google Form. Please link a form first, then try again."
   }
 
   // Check if all responses have an associated email address to Document Properties.
   var docPropsKeys = PropertiesService.getDocumentProperties().getKeys();
+  // Logger.log(docPropsKeys)
+
+  // Add email to Doc Props
   for (var e in formResponses) {
     if (docPropsKeys.includes(formResponses[e].getRespondentEmail())) {
-      Logger.log("found key")
+      // Logger.log("found key")
       continue
     }
-    PropertiesService.getDocumentProperties().setProperty(formResponses[e].getRespondentEmail(), "")
+    PropertiesService.getDocumentProperties().setProperty(formResponses[e].getRespondentEmail(), "");
   }
 
-  // Place all values in an easily retrievable Array that will be passed to sortComments(). If there's an error, it's likely because the email and comment columns were not set properly.
-  try {
-    var studentComments = [
-      // sh.getRange(2,emailIndex+1,sh.getLastRow()-1).getValues(),
-      formResponses,
-      sh.getRange(2,commentIndex+1,sh.getLastRow()-1).getValues()
-    ];
-    // Logger.log(studentComments)
-  } catch (e) {
-    // return "Identifier doesn't match or can't be found in portfolio. Select identifiers through the hamburger icon in the top right, or make sure they're correct in the portfolio tab."
-    return "Comment Column can't be found in portfolio. Make sure the Comment Column exists, and select it through the hamburger icon in the top right."
-  }
+  //Refresh Document Properties.
+  docPropsKeys = PropertiesService.getDocumentProperties().getKeys();
+  //Logger.log(docPropsKeys)
+
+  // Get values from Spreadsheet
+  var data = sh.getDataRange().getValues();
+  // Logger.log(data)
 
   // Start sorting comments
-  sortComments(docPropsKeys, studentComments);
+  sortComments(docPropsKeys, formResponses, data);
 
   // If everything completed successfully, return this.
   return "Exported successfully to portfolios."
@@ -65,8 +53,12 @@ function exportPortfolio() {
 */
 function createStudentPortfolio(student){
   // Get Student's name. Requires the Admin SDK API.
-  var name = AdminDirectory.Users.get(student, {viewType:'domain_public', fields:'name'});
-  var fullName = name.name.fullName;
+  try {
+    var name = AdminDirectory.Users.get(student, {viewType:'domain_public', fields:'name'});
+    var fullName = name.name.fullName;
+  } catch(err) {
+    var fullName = student.substring(0, student.lastIndexOf("@"));;
+  }
   // Logger.log(fullName);
 
   // Create folders for the User to put all the portfolios in one place. Calls on the createPortfolioFolder() function.
@@ -93,37 +85,49 @@ function createStudentPortfolio(student){
 /* 
 * The main function to the whole operation. This is where the magic happens. I will do my best to break everything down.
 */
-function sortComments(docPropsKeys, studentComments) {
-  // Logger.log(docPropsKeys)
-  // Logger.log(studentComments)
-  // For all the students in the Portfolio Tab...
-  for (var l in docPropsKeys) {
-    // Logger.log(docPropsKeys[l]);
+function sortComments(docPropsKeys, formResponses, data) {
+  // Logger.log(docPropsKeys);
+  // Logger.log(formResponses);
+  // Logger.log(data);
+  try {
+    var commentIndex = data[0].indexOf(comment);  // Get Comment column, selected by user.
+  } catch (err) {
+    return "Cannot find Comments column. Please select the Comments column by using the hamburger icon on the top right."
+  }
 
-    // For all the students who filled a response...
-    for (var s in studentComments[0]){
-      var email = studentComments[0][s].getRespondentEmail();
+  // For all the students who filled a response...
+  for (var l in docPropsKeys) {
+    // Logger.log('Current docProp: '+docPropsKeys[l])
+
+    // Get the Portfolio URL
+    var portfolioURL = PropertiesService.getDocumentProperties().getProperty(docPropsKeys[l]);
+
+    try {
+      var studentPortfolio = SlidesApp.openByUrl(portfolioURL);
+    } catch (e) {
+      Logger.log("Cannot find student Portfolio. Creating new one.");
+      var studentPortfolio = SlidesApp.openByUrl(createStudentPortfolio(docPropsKeys[l]));
+    }
+
+    // For all the students who answered the form...
+    for (var s in formResponses){
+      var email = formResponses[s].getRespondentEmail();
       // Logger.log(email)
+
+      // If the current student is the one associated to the current Doc Prop...
       if (email == docPropsKeys[l]) {
 
-        // Get the Portfolio URL
-        var portfolioURL = PropertiesService.getDocumentProperties().getProperty(docPropsKeys[l]);
-        // Logger.log(docPropsKeys[l]+' - '+studentComments[0][s]+' - '+studentComments[1][s]);
+        // Find Comment
+        var studentComment = data.find((r) => {
+          return r.includes(email)
+        });
+        // Logger.log(email+' - '+docPropsKeys[l]+' - '+studentComment[commentIndex]);
 
         try {
-          var formResponse = studentComments[0][s].getItemResponses();
+          var formResponse = formResponses[s].getItemResponses();
           // Logger.log(formResponse)
         } catch (e) {
           Logger.log("Did not find Form responses.")
-          // formResponse = studentComments[1][s];
-        }
-      
-        try {
-          // Logger.log(docPropsKeys[l])
-          var studentPortfolio = SlidesApp.openByUrl(portfolioURL);
-        } catch (e) {
-          // Logger.log("Cannot find student Portfolio. Creating new one.");
-          var studentPortfolio = SlidesApp.openByUrl(createStudentPortfolio(docPropsKeys[l]));
         }
 
         var currentSlide = studentPortfolio.appendSlide(SlidesApp.openById(templateSlideID).getSlides()[1]);
@@ -138,12 +142,10 @@ function sortComments(docPropsKeys, studentComments) {
             currentSlide.replaceAllText("{{Response "+r+"}}", "Question: "+formResponse[r].getItem().getTitle()+"\n"+formResponse[r].getResponse());
           } catch (e) {
             Logger.log("No form Response")
-            // currentSlide.replaceAllText("{{Response "+r+"}}", "Question: "+studentComments[0][0][r]+"\n"+studentComments[0][s+1][r]);
           }
         }
-        currentSlide.replaceAllText("{{Comment}}", studentComments[1][s]);
+        currentSlide.replaceAllText("{{Comment}}", studentComment[commentIndex]);
 
-        // Logger.log(studentComments);
         break
       };
     };
