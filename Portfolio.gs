@@ -94,6 +94,7 @@ function sortComments(docPropsKeys, formResponses, data) {
   } catch (err) {
     return "Cannot find Comments column. Please select the Comments column by using the hamburger icon on the top right."
   }
+  // Logger.log(commentIndex)
 
   // For all the students who filled a response...
   for (var l in docPropsKeys) {
@@ -105,7 +106,7 @@ function sortComments(docPropsKeys, formResponses, data) {
     try {
       var studentPortfolio = SlidesApp.openByUrl(portfolioURL);
     } catch (e) {
-      Logger.log("Cannot find student Portfolio. Creating new one.");
+      Logger.log("Cannot find Portfolio for email "+docPropsKeys[l]+". Creating new one.");
       var studentPortfolio = SlidesApp.openByUrl(createStudentPortfolio(docPropsKeys[l]));
     }
 
@@ -121,6 +122,7 @@ function sortComments(docPropsKeys, formResponses, data) {
         var studentComment = data.find((r) => {
           return r.includes(email)
         });
+
         // Logger.log(email+' - '+docPropsKeys[l]+' - '+studentComment[commentIndex]);
 
         try {
@@ -141,10 +143,15 @@ function sortComments(docPropsKeys, formResponses, data) {
           try {
             currentSlide.replaceAllText("{{Response "+r+"}}", "Question: "+formResponse[r].getItem().getTitle()+"\n"+formResponse[r].getResponse());
           } catch (e) {
-            Logger.log("No form Response")
+            Logger.log("No Form Response - Cannot replace questions/answers")
           }
         }
-        currentSlide.replaceAllText("{{Comment}}", studentComment[commentIndex]);
+
+        try {
+          currentSlide.replaceAllText("{{Comment}}", studentComment[commentIndex]);
+        } catch (err) {
+          Logger.log("No comment - "+email+" did not fill out form")
+        }
 
         break
       };

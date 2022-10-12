@@ -10,7 +10,7 @@ function createPortfolioFolder() {
     //If the name exists return the id of the folder
     try {
       if(folder.getId() === portfolioFolderID){
-        Logger.log("Portfolio Found")
+        Logger.log("Portfolio Found: "+portfolioFolderID)
         portfolioFolderExists = true;
         return checkSubFolders();
       };
@@ -38,7 +38,7 @@ function checkSubFolders() {
 
     try {
       if (subFolder.getId() === subFolderID) {
-        Logger.log("SubFolder Found")
+        Logger.log("SubFolder Found: "+subFolderID)
         subFolderExists = true;
         return subFolderID
       }
