@@ -34,6 +34,11 @@ function exportPortfolio() {
   docPropsKeys = PropertiesService.getDocumentProperties().getKeys();
   //Logger.log(docPropsKeys)
 
+  if (sh.getRange(1,1).getValue() != 'Exported') {
+    sh.insertColumnBefore(1).setColumnWidth(1,60);
+    sh.getRange(1,1).setValue('Exported');
+  }
+
   // Get values from Spreadsheet
   var data = sh.getDataRange().getValues();
   // Logger.log(data)
@@ -86,6 +91,7 @@ function createStudentPortfolio(student){
 * The main function to the whole operation. This is where the magic happens. I will do my best to break everything down.
 */
 function sortComments(docPropsKeys, formResponses, data) {
+  var sh = SpreadsheetApp.getActive().getActiveSheet();
   // Logger.log(docPropsKeys);
   // Logger.log(formResponses);
   // Logger.log(data);
@@ -106,54 +112,60 @@ function sortComments(docPropsKeys, formResponses, data) {
     try {
       var studentPortfolio = SlidesApp.openByUrl(portfolioURL);
     } catch (e) {
-      Logger.log("Cannot find Portfolio for email "+docPropsKeys[l]+". Creating new one.");
+      Logger.log("Cannot find Portfolio for "+docPropsKeys[l]+". Creating new one.");
       var studentPortfolio = SlidesApp.openByUrl(createStudentPortfolio(docPropsKeys[l]));
     }
 
-    // For all the students who answered the form...
-    for (var s in formResponses){
-      var email = formResponses[s].getRespondentEmail();
-      // Logger.log(email)
+    var row = sh.createTextFinder(docPropsKeys[l]).matchEntireCell(true).findNext().getRow();
 
-      // If the current student is the one associated to the current Doc Prop...
-      if (email == docPropsKeys[l]) {
+    if (!sh.getRange(row,1).isChecked()) {
 
-        // Find Comment
-        var studentComment = data.find((r) => {
-          return r.includes(email)
-        });
+      // For all the students who answered the form...
+      for (var s in formResponses){
+        var email = formResponses[s].getRespondentEmail();
+        // Logger.log(email)
 
-        // Logger.log(email+' - '+docPropsKeys[l]+' - '+studentComment[commentIndex]);
+        // If the current student is the one associated to the current Doc Prop...
+        if (email == docPropsKeys[l]) {
 
-        try {
-          var formResponse = formResponses[s].getItemResponses();
-          // Logger.log(formResponse)
-        } catch (e) {
-          Logger.log("Did not find Form responses.")
-        }
+          // Find Comment
+          var studentComment = data.find((r) => {
+            return r.includes(email)
+          });
 
-        var currentSlide = studentPortfolio.appendSlide(SlidesApp.openById(templateSlideID).getSlides()[1]);
-        currentSlide.replaceAllText("{{Title}}", "Commentaire de la réponse "+SpreadsheetApp.getActiveSheet().getName());
-        var responsePlaceholderArray = [];
-        for (var r in formResponse) {
-          responsePlaceholderArray.push("{{Response "+r+"}}\n");
-        }
-        currentSlide.replaceAllText("{{Response}}", responsePlaceholderArray.join(''))
-        for (var r in responsePlaceholderArray) {
+          // Logger.log(email+' - '+docPropsKeys[l]+' - '+studentComment[commentIndex]);
+
           try {
-            currentSlide.replaceAllText("{{Response "+r+"}}", "Question: "+formResponse[r].getItem().getTitle()+"\n"+formResponse[r].getResponse());
+            var formResponse = formResponses[s].getItemResponses();
+            // Logger.log(formResponse)
           } catch (e) {
-            Logger.log("No Form Response - Cannot replace questions/answers")
+            Logger.log("Did not find Form responses.")
           }
-        }
 
-        try {
-          currentSlide.replaceAllText("{{Comment}}", studentComment[commentIndex]);
-        } catch (err) {
-          Logger.log("No comment - "+email+" did not fill out form")
-        }
+          var currentSlide = studentPortfolio.appendSlide(SlidesApp.openById(templateSlideID).getSlides()[1]);
+          currentSlide.replaceAllText("{{Title}}", "Commentaire de la réponse "+SpreadsheetApp.getActiveSheet().getName());
+          var responsePlaceholderArray = [];
+          for (var r in formResponse) {
+            responsePlaceholderArray.push("{{Response "+r+"}}\n");
+          }
+          currentSlide.replaceAllText("{{Response}}", responsePlaceholderArray.join(''))
+          for (var r in responsePlaceholderArray) {
+            try {
+              currentSlide.replaceAllText("{{Response "+r+"}}", "Question: "+formResponse[r].getItem().getTitle()+"\n"+formResponse[r].getResponse());
+            } catch (e) {
+              Logger.log("No Form Response - Cannot replace questions/answers")
+            }
+          }
 
-        break
+          try {
+            currentSlide.replaceAllText("{{Comment}}", studentComment[commentIndex]);
+            sh.getRange(row,1).insertCheckboxes();
+            sh.getRange(row,1).check();
+          } catch (err) {
+            Logger.log("No comment - "+email+" did not fill out form")
+          }
+          break
+        };
       };
     };
   };
