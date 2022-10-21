@@ -2,7 +2,7 @@ function getComment() {return PropertiesService.getScriptProperties().getPropert
 
 function updateComment() {
   var currentComment = SpreadsheetApp.getCurrentCell().getValue();
-  PropertiesService.getScriptProperties().setProperty('commentCol', currentComment);
+  PropertiesService.getScriptProperties().setProperty('commentCol', currentComment.toString().toLowerCase());
   return currentComment
 }
 

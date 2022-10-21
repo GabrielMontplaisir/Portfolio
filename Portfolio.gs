@@ -3,6 +3,7 @@ var templateSlideID = "1NvIum_IB-2wUZSCeVFlcOTj5xV4e7cysBcnOifkhZj4"
 
 // The column name for the student grades.
 var comment = PropertiesService.getScriptProperties().getProperty('commentCol');
+// Logger.log(comment)
 
 function exportPortfolio() {
   var ss = SpreadsheetApp.getActive();
@@ -96,7 +97,8 @@ function sortComments(docPropsKeys, formResponses, data) {
   // Logger.log(formResponses);
   // Logger.log(data);
   try {
-    var commentIndex = data[0].indexOf(comment);  // Get Comment column, selected by user.
+    var lowercased = data[0].map(name => name.toLowerCase());
+    var commentIndex = lowercased.indexOf(comment);  // Get Comment column, selected by user.
   } catch (err) {
     return "Cannot find Comments column. Please select the Comments column by using the hamburger icon on the top right."
   }
