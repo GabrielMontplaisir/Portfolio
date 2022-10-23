@@ -118,7 +118,12 @@ function sortComments(docPropsKeys, formResponses, data) {
       var studentPortfolio = SlidesApp.openByUrl(createStudentPortfolio(docPropsKeys[l]));
     }
 
-    var row = sh.createTextFinder(docPropsKeys[l]).matchEntireCell(true).findNext().getRow();
+    try {
+      var row = sh.createTextFinder(docPropsKeys[l]).matchEntireCell(true).findNext().getRow();
+    } catch (e) {
+      Logger.log("Cannot find student in list. Moving on.")
+      continue
+    }
 
     if (!sh.getRange(row,1).isChecked()) {
 
